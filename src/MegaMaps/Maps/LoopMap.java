@@ -5,7 +5,7 @@ import MegaMaps.Map;
 import java.util.ArrayList;
 
 /**
- * A naive loop based dictionary. Very slow(n^2)
+ * A naive loop based dictionary. Very slow O(n)
  * @param <KeyType>
  * @param <ValueType>
  */
