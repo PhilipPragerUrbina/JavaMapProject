@@ -19,4 +19,6 @@ public interface Map<KeyType, ValueType> {
      * @param value The value
      */
     void put(KeyType key, ValueType value);
+
+    //todo add size
 }
