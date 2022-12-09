@@ -21,4 +21,8 @@ public interface Map<KeyType, ValueType> {
     void put(KeyType key, ValueType value);
 
     //todo add size
+
+    //todo add remove
+
+    //todo add iterator
 }
