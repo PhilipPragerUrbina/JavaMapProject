@@ -28,6 +28,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
 
     private Bucket[] buffer; //actual hash table
     private int entry_size = 0; //the # of entries
+    private double resize_percentage;
 
 
     //todo add auto resize and re-hash. Multi-thread?
@@ -36,18 +37,29 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
     //todo re-hash by setting new buffer and re-putting existing pairs
 
     /**
-     * Default constructor with a start size of 100
+     * Default constructor with a start size of 1000 and a resize percentage of 2.0
      */
     public HashMap(){
-        this(100);
+        this(1000,2.0);
     }
 
     /**
      * Create a new hash map with a certain size
      * @param start_size Should be similar to the amount of data you expect to contain in it
+     * Has a resize percentage of 2.0
      */
     public HashMap(int start_size){
+       this(start_size,2.0);
+    }
+
+    /**
+     * Create a new hash map with a certain size
+     * @param start_size Should be similar to the amount of data you expect to contain in it
+     * @param resize_percentage What percentage full (0.1=10%) to resize the hashmap to be bigger. For example 2.0 means resizing when number of entries is twice the table size.
+     */
+    public HashMap(int start_size, double resize_percentage){
         buffer = (Bucket[]) Array.newInstance(Bucket.class, start_size); //todo Find out a better way to do this
+        this.resize_percentage = resize_percentage;
     }
 
     /**
@@ -58,8 +70,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
         Bucket[] new_table = (Bucket[]) Array.newInstance(Bucket.class, size); //Create new array
         for (Pair<KeyType,ValueType> pair: this ) { //iterate over pairs
             //put the existing key in new table, we know it is not an assignment
-            //todo create one method for getting hash, in case of different hash method
-            int idx = hash(pair.key, new_table.length); //re-hash with new length
+            int idx = hash(pair.key, size); //re-hash with new length
             if(new_table[idx] != null){
                 new_table[idx].addPair(pair); //There is already a bucket here
             }else{
@@ -86,6 +97,10 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
 
     @Override
     public void put(KeyType key, ValueType value) {
+        //auto resize if needed
+        if((double)entry_size/(double)buffer.length > resize_percentage){
+            resize(buffer.length + (int)(buffer.length * resize_percentage)); //resize proportional to current size and the resize percentage
+        }
 
         int idx = hash(key, buffer.length);
 
@@ -117,7 +132,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
     private int hash(KeyType key, int table_size){
         int hash = key.hashCode(); //get the hash
         //compress to size
-        return Math.abs(hash % buffer.length);  //should not be negative
+        return Math.abs(hash % table_size);  //should not be negative
         //todo make sure to minimize collisions
     }
 
