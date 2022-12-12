@@ -1,11 +1,14 @@
 package MegaMaps;
 
+import MegaMaps.Utils.Pair;
+
 /**
  * Interface for using MegaMap maps.
  * @param <KeyType> The key type
  * @param <ValueType> The value type
+ *  Can be iterated over
  */
-public interface Map<KeyType, ValueType> {
+public interface Map<KeyType, ValueType> extends Iterable<Pair<KeyType, ValueType>> {
     /**
      * Get a value in the map
      * @param key The key that corresponds to the value
@@ -20,9 +23,15 @@ public interface Map<KeyType, ValueType> {
      */
     void put(KeyType key, ValueType value);
 
-    //todo add size
+    /**
+     * Get the number of entries in the map
+     * @return The # of entries
+     */
+    int size();
 
-    //todo add remove
-
-    //todo add iterator
+    /**
+     * Remove an entry
+     * @param key The key to remove
+     */
+    void remove(KeyType key);
 }

@@ -123,6 +123,21 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
         }
     }
 
+    @Override
+    public void remove(KeyType key) {
+        int idx = hash(key, buffer.length);
+
+        Bucket bucket = buffer[idx]; //access the bucket
+        if(bucket != null){ //exists
+            for (Pair<KeyType,ValueType> candidate: bucket.pairs) {
+                if(candidate.key.equals(key)){
+                    bucket.pairs.remove(candidate);
+                    return;
+                }
+            }
+        }
+    }
+
     /**
      * Utility to hash and compress a key
      * @param key The key
@@ -136,10 +151,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
         //todo make sure to minimize collisions
     }
 
-    /**
-     * Get the size of the map
-     * @return # of entries
-     */
+    @Override
     public int size(){
         return entry_size;
     }
