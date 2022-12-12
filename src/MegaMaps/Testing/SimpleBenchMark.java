@@ -1,9 +1,8 @@
-package MegaMaps.Benchmarks;
+package MegaMaps.Testing;
 
 import MegaMaps.Map;
 import MegaMaps.Utils.Timer;
 
-import java.awt.image.TileObserver;
 import java.util.Random;
 
 /**

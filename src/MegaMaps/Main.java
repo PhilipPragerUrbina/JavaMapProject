@@ -1,6 +1,6 @@
 package MegaMaps;
 
-import MegaMaps.Benchmarks.SimpleBenchMark;
+import MegaMaps.Testing.SimpleBenchMark;
 import MegaMaps.Maps.HashMap;
 import MegaMaps.Maps.LoopMap;
 import MegaMaps.Utils.Pair;
