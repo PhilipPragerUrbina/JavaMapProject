@@ -4,9 +4,11 @@ import MegaMaps.Utils.Pair;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * Data consisting of random integers
+ * Data consisting of random integers that have UNIQUE keys
  */
 public class RandomIntegerData implements Dataset<Integer,Integer>{
     private ArrayList<Pair<Integer,Integer>> data; //the data
@@ -18,8 +20,9 @@ public class RandomIntegerData implements Dataset<Integer,Integer>{
      */
     public RandomIntegerData(int size){
         data = new ArrayList<>(size); //preallocate
+        Iterator<Integer> unique_keys =  random.ints().distinct().iterator(); //Make sure keys are UNIQUE!
         for (int i = 0; i < size; i++) {
-            data.add(new Pair<>(random.nextInt(),random.nextInt())); //gen data
+            data.add(new Pair<>(unique_keys.next(),random.nextInt())); //gen data
         }
     }
 
@@ -31,10 +34,5 @@ public class RandomIntegerData implements Dataset<Integer,Integer>{
     @Override
     public Pair<Integer, Integer> getEntry(int index) {
         return data.get(index);
-    }
-
-    @Override
-    public String toString() {
-        return "RandomIntegerData{}";
     }
 }

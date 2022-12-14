@@ -4,6 +4,7 @@ import MegaMaps.Utils.Pair;
 
 /**
  * A dataset for benchmarking and testing
+ *  Key's MUST BE UNIQUE
  * @param <KeyType>
  * @param <ValueType>
  */

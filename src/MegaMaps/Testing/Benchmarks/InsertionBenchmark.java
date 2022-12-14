@@ -24,9 +24,4 @@ public class InsertionBenchmark<KeyType,ValueType> extends Benchmark<KeyType,Val
         }
         return (int)timer.end();
     }
-
-    @Override
-    public String toString() {
-        return "Insertion Benchmark with " + data.toString() + " map " + map.getClass().toString();
-    }
 }

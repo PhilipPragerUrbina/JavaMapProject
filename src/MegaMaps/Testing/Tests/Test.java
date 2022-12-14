@@ -11,8 +11,8 @@ import MegaMaps.Testing.Datasets.Dataset;
  */
 public abstract class Test<KeyType,ValueType> {
     //The test case
-    private Dataset<KeyType, ValueType> data;
-    private Map<KeyType, ValueType> map;
+    protected Dataset<KeyType, ValueType> data;
+    protected Map<KeyType, ValueType> map;
 
     /**
      * Create a test
@@ -26,10 +26,29 @@ public abstract class Test<KeyType,ValueType> {
 
     /**
      * Run the test
-     * @return Null if test pass, description if test fail
+     * @return Null if test pass, error message if test fail
      */
     abstract public String run();
+
+    /**
+     * Reset the map in the test
+     */
+    public void reset(){
+        map.reset();
+    }
+
+    /**
+     * Get a formatted test failed message to return
+     * @param what The assertion that failed
+     * @return The formatted message
+     */
+    protected String getErrorMessage(String what){
+        return this.getClass().toString() + " with " + data.getClass().toString() + " on " + map.getClass().toString() + "\n" + "TEST FAILED: " + what + "\n";
+    }
 }
+
+
+
 
 
 

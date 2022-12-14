@@ -60,7 +60,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
     public HashMap(int start_size, double resize_percentage){
         entry_size = 0;
         this.start_size = start_size;
-        buffer = (Bucket[]) Array.newInstance(Bucket.class, start_size); //todo Find out a better way to do this
+        buffer = (Bucket[]) Array.newInstance(Bucket.class, start_size);
         this.resize_percentage = resize_percentage;
     }
 

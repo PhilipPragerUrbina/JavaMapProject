@@ -37,6 +37,13 @@ public abstract class Benchmark<KeyType,ValueType> {
         map.reset();
     }
 
+    /**
+     * Get a simple description of what the benchmark is
+     * @return A one line name with what the benchmark, and it's inputs are
+     */
+    public String getDescription() {
+        return this.getClass().toString() + " with " + data.getClass().toString() + " on " + map.getClass().toString();
+    }
 }
 
 

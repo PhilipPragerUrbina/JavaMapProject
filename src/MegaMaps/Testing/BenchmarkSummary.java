@@ -38,7 +38,7 @@ public class BenchmarkSummary {
      */
     @Override
     public String toString() {
-        String out = benchmark.toString() + "\n";
+        String out = benchmark.getDescription()+"\n";
         out += "Trials: " + statistics.getCount() + "\n";
         out += "Average: " + statistics.getAverage() + "\n";
         out += "Max: " + statistics.getMax() + "\n";
@@ -52,7 +52,7 @@ public class BenchmarkSummary {
      * @param other
      */
     public String comparison(BenchmarkSummary other){
-        String out = benchmark.toString() + " compared to " + other.benchmark.toString() + "\n";
+        String out = benchmark.getDescription() + " compared to " + other.benchmark.getDescription() + "\n";
         out += "Percent difference of A(new value) compared to B(old value) \n";
         out += "Trials: " + percentImprovement(statistics.getCount(),other.statistics.getCount()) + "\n";
         out += "Average: " + percentImprovement(statistics.getAverage(),other.statistics.getAverage()) + "\n";
