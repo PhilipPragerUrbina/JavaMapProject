@@ -1,10 +1,27 @@
 package MegaMaps.Testing.Datasets;
 
-import MegaMaps.Map;
 import MegaMaps.Utils.Pair;
 
-//for random datasets use java secure random. Also try uuid's
+/**
+ * A dataset for benchmarking and testing
+ * @param <KeyType>
+ * @param <ValueType>
+ */
 public interface Dataset<KeyType, ValueType> {
+    /**
+     * Get the # of entries in dataset
+     * @return Size of dataset
+     */
     int size();
+
+    /**
+     * Access the dataset
+     * @param index The nth entry to access
+     * @return The key-value pair, or null if non-existent
+     */
     Pair<KeyType,ValueType> getEntry(int index);
 }
+
+
+
+//for random datasets use java secure random. Also try uuid's

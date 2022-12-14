@@ -34,4 +34,9 @@ public interface Map<KeyType, ValueType> extends Iterable<Pair<KeyType, ValueTyp
      * @param key The key to remove
      */
     void remove(KeyType key);
+
+    /**
+     * Revert map to original state
+     */
+    void reset();
 }

@@ -11,8 +11,8 @@ import MegaMaps.Testing.Datasets.Dataset;
  */
 public abstract class Benchmark<KeyType,ValueType> {
     //The test case
-    private Dataset<KeyType, ValueType> data;
-    private Map<KeyType, ValueType> map;
+    protected Dataset<KeyType, ValueType> data;
+    protected Map<KeyType, ValueType> map;
 
     /**
      * Create a Benchmark
@@ -28,7 +28,14 @@ public abstract class Benchmark<KeyType,ValueType> {
      * Run the benchmark
      * @return Execution time in milliseconds
      */
-    public abstract double run();
+    public abstract int run();
+
+    /**
+     * Reset the map in the benchmark
+     */
+    public void reset(){
+        map.reset();
+    }
 
 }
 

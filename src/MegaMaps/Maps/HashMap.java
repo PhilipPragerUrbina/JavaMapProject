@@ -13,6 +13,8 @@ import java.util.Iterator;
  * @param <ValueType>
  */
 public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Iterable<Pair<KeyType,ValueType>> {
+
+
     /**
      * The Bucket class for putting together similar keys
      */
@@ -27,14 +29,12 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
     }
 
     private Bucket[] buffer; //actual hash table
-    private int entry_size = 0; //the # of entries
+    private int entry_size; //the # of entries
     private double resize_percentage;
 
+    //for reset
+    int start_size;
 
-    //todo add auto resize and re-hash. Multi-thread?
-    //todo defualt constuctor
-    //todo figure out when to resize based on count
-    //todo re-hash by setting new buffer and re-putting existing pairs
 
     /**
      * Default constructor with a start size of 1000 and a resize percentage of 2.0
@@ -58,6 +58,8 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
      * @param resize_percentage What percentage full (0.1=10%) to resize the hashmap to be bigger. For example 2.0 means resizing when number of entries is twice the table size.
      */
     public HashMap(int start_size, double resize_percentage){
+        entry_size = 0;
+        this.start_size = start_size;
         buffer = (Bucket[]) Array.newInstance(Bucket.class, start_size); //todo Find out a better way to do this
         this.resize_percentage = resize_percentage;
     }
@@ -138,6 +140,12 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
         }
     }
 
+    @Override
+    public void reset() {
+        entry_size = 0; //reset count
+        buffer = (Bucket[]) Array.newInstance(Bucket.class, start_size); //reset buffer
+    }
+
     /**
      * Utility to hash and compress a key
      * @param key The key
@@ -148,7 +156,6 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
         int hash = key.hashCode(); //get the hash
         //compress to size
         return Math.abs(hash % table_size);  //should not be negative
-        //todo make sure to minimize collisions
     }
 
     @Override

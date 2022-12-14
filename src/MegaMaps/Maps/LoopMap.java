@@ -52,6 +52,12 @@ public class LoopMap<KeyType, ValueType> implements Map<KeyType,ValueType> {
     }
 
     @Override
+    public void reset() {
+        keys = new ArrayList<>();
+        values = new ArrayList<>();
+    }
+
+    @Override
     public int size() {
         return keys.size();
     }
