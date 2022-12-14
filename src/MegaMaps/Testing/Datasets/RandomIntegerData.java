@@ -35,4 +35,15 @@ public class RandomIntegerData implements Dataset<Integer,Integer>{
     public Pair<Integer, Integer> getEntry(int index) {
         return data.get(index);
     }
+
+    /* Deprecated for performance reasons
+    @Override
+    public void regenerate() {
+        int size = data.size(); //get old size
+        random.reseed(); //randomize
+        Iterator<Integer> unique_keys =  random.ints().distinct().iterator(); //Get new keys
+        for (int i = 0; i < size; i++) {
+            data.set(i,new Pair<>(unique_keys.next(),random.nextInt())); //new values
+        }
+    }*/
 }

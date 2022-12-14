@@ -127,13 +127,15 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
 
     @Override
     public void remove(KeyType key) {
+        //todo test this as well as size
+        //todo make map resize to be smaller if enough removed to save space
         int idx = hash(key, buffer.length);
-
         Bucket bucket = buffer[idx]; //access the bucket
         if(bucket != null){ //exists
             for (Pair<KeyType,ValueType> candidate: bucket.pairs) {
                 if(candidate.key.equals(key)){
-                    bucket.pairs.remove(candidate);
+                    bucket.pairs.remove(candidate); //remove it
+                    entry_size--; //Decrement size
                     return;
                 }
             }

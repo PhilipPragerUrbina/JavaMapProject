@@ -21,6 +21,7 @@ public interface Dataset<KeyType, ValueType> {
      * @return The key-value pair, or null if non-existent
      */
     Pair<KeyType,ValueType> getEntry(int index);
+
 }
 
 

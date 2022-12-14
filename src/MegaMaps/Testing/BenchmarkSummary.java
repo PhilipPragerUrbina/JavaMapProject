@@ -31,6 +31,30 @@ public class BenchmarkSummary {
         }
     }
 
+    /**
+     * Get the average
+     * @return mean
+     */
+    public double getMean(){
+        return statistics.getAverage();
+    }
+
+    /**
+     * Get total time of all trials
+     * @return time
+     */
+    public double getSum(){
+        return statistics.getSum();
+    }
+
+    /**
+     * Get the standard deviation
+     * @return SD
+     */
+    public double getSD(){
+        return getStandardDeviation();
+    }
+
 
     /**
      * Get a summary of the stats
@@ -44,6 +68,7 @@ public class BenchmarkSummary {
         out += "Max: " + statistics.getMax() + "\n";
         out += "Min: " + statistics.getMin() + "\n";
         out += "SD: " + getStandardDeviation() + "\n";
+        out += "Sum: " + statistics.getSum() + "\n";
         return out;
     }
 
@@ -59,6 +84,7 @@ public class BenchmarkSummary {
         out += "Max: " + percentImprovement(statistics.getMax(),other.statistics.getMax()) + "\n";
         out += "Min: " + percentImprovement(statistics.getMin(),other.statistics.getMin())+ "\n";
         out += "SD: " + percentImprovement(getStandardDeviation(),other.getStandardDeviation()) + "\n";
+        out += "Sum: " + percentImprovement(statistics.getSum(),other.statistics.getSum())+ "\n";
         return out;
     }
 
