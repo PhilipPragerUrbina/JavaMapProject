@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 /**
  * An experimental hash map with nested buckets
+ * Very slow(but was worth a try)
  * @param <KeyType>
  * @param <ValueType>
  */
@@ -82,7 +83,7 @@ public class TreeMap <KeyType, ValueType> implements Map<KeyType,ValueType> {
                 return child.entry.value; //Entry is found
             }
             //need to traverse further
-            root_node = child;
+            current_node = child;
             level++;
         }
     }
@@ -102,19 +103,21 @@ public class TreeMap <KeyType, ValueType> implements Map<KeyType,ValueType> {
                 return;
             }
             if(child.isLeaf()){
+
                 //Collision
                 Node old_leaf = child; //Get old leaf node
                 current_node.nodes[idx] = new Node(); //Create new inner node
                 child =  current_node.nodes[idx];
                 //insert back in old node
-                int other_idx = hash(key,level+1);
+                int other_idx = hash(old_leaf.entry.key,level+1);
                 child.nodes[other_idx] = old_leaf;
                 //keep traversing to add new pair to this new inner node
             }
             //need to traverse further
-            root_node = child;
+            current_node = child;
             level++;
         }
+
     }
 
     @Override
@@ -134,7 +137,7 @@ public class TreeMap <KeyType, ValueType> implements Map<KeyType,ValueType> {
                 return;
             }
             //need to traverse further
-            root_node = child;
+            current_node = child;
             level++;
         }
     }
@@ -153,14 +156,18 @@ public class TreeMap <KeyType, ValueType> implements Map<KeyType,ValueType> {
      */
     private int hash(KeyType key, int offset ){
         int hash = key.hashCode(); //get the hash
-        //compress to size and change based on offset. Todo fin something better than multiplication
-        return Math.abs((hash*offset) % node_size);  //should not be negative
-    }
+        //compress to size and change based on offset.
+     //   int new_hash = (int)((double)hash/Math.pow((double) node_size,offset));;
+        int new_hash = (int)(((double)(hash * (node_size+(offset*(offset+1)))))/(double)(hash+(offset*2))); //transform the hash
+        return Math.abs(new_hash % node_size);
+    }//should not be negative
 
     @Override
     public int size(){
         return entry_size;
     }
+
+    //todo add dynamic file loading
 
     /**
      * Instead of key list, you can iterate over the map
