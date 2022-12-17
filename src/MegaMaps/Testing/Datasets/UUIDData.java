@@ -22,6 +22,7 @@ public class UUIDData implements Dataset<UUID,Integer>{
         for (int i = 0; i < size; i++) {
             //Random UUID repeats 1 in a billion(probably fine)
             data.add(new Pair<>(UUID.randomUUID(),i)); //gen data
+
         }
     }
 

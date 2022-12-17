@@ -100,6 +100,7 @@ public class TreeMap <KeyType, ValueType> implements Map<KeyType,ValueType> {
             if(child == null){
                 //create leaf node
                 current_node.nodes[idx] = new Node(pair);
+                entry_size++;
                 return;
             }
             if(child.isLeaf()){

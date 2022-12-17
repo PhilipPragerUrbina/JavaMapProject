@@ -1,6 +1,7 @@
 package MegaMaps;
 
 
+import MegaMaps.Maps.ComparisonMap;
 import MegaMaps.Maps.TreeMap;
 import MegaMaps.Testing.BenchmarkSummary;
 import MegaMaps.Testing.Benchmarks.AccessBenchmark;
@@ -23,19 +24,19 @@ import java.util.UUID;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        HashMap<UUID,Integer> map = new HashMap<>(1000);
-        Dataset<UUID,Integer> set = new UUIDData(10000);
-        Test<UUID,Integer> test = new InsertReadTest<>(set,map);
+        Map<String,Integer> map = new ComparisonMap<>();
+        Dataset<String,Integer> set = new RandomStringData(100000);
+        Test<String,Integer> test = new InsertReadTest<>(set,map);
         System.out.println(test.run());
-        for (Pair pair: map) {
-         //   System.out.println(pair);
-        }
+      //  for (Pair pair: map) {
+        //    System.out.println(pair);
+       // }
 
 
         DesmosHelper helper = new DesmosHelper(new DesmosHelper.plotFunction() {
             @Override
             public double getNextY(double x) {
-                HashMap<Integer,Integer> map = new HashMap<>(100);
+                Map<Integer,Integer> map = new HashMap<>(1000);
                 Dataset<Integer,Integer> set = new RandomIntegerData((int)x);
                 Benchmark<Integer,Integer> benchmark = new ReadWriteBenchmark<>(set,map);
                 BenchmarkSummary summary = new BenchmarkSummary(benchmark,5);
