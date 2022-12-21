@@ -3,7 +3,6 @@ package MegaMaps.Maps;
 import MegaMaps.Map;
 import MegaMaps.Utils.Pair;
 
-import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -13,14 +12,14 @@ import java.util.Stack;
  * @param <KeyType>
  * @param <ValueType>
  */
-public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map<KeyType,ValueType>, Iterable<Pair<KeyType,ValueType>> {
+public class ComparisonMap<KeyType, ValueType> implements Map<KeyType,ValueType>, Iterable<Pair<KeyType,ValueType>> {
     /**
      * A node in the tree
      */
     class Node{
         public Node less_node, greater_node = null; //binary children
         public Pair<KeyType,ValueType> entry; //The value
-        private int hash; //the hash code computed on creation
+        private final int hash; //the hash code computed on creation
 
         /**
          * Create a new node
@@ -159,7 +158,7 @@ public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map
     public Iterator<Pair<KeyType,ValueType>> iterator() {
         return new Iterator<>() {
             int entries_given = 0; //# Entries that have been outputted
-            Stack<Node> stack = new Stack<>(); //stack for traversal of tree
+            final Stack<Node> stack = new Stack<>(); //stack for traversal of tree
             boolean first = true;
 
             @Override
