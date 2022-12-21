@@ -79,12 +79,12 @@ public class BenchmarkSummary {
     public String comparison(BenchmarkSummary other){
         String out = benchmark.getDescription() + " compared to " + other.benchmark.getDescription() + "\n";
         out += "Percent difference of A(new value) compared to B(old value) \n";
-        out += "Trials: " + percentImprovement(statistics.getCount(),other.statistics.getCount()) + "\n";
-        out += "Average: " + percentImprovement(statistics.getAverage(),other.statistics.getAverage()) + "\n";
-        out += "Max: " + percentImprovement(statistics.getMax(),other.statistics.getMax()) + "\n";
-        out += "Min: " + percentImprovement(statistics.getMin(),other.statistics.getMin())+ "\n";
-        out += "SD: " + percentImprovement(getStandardDeviation(),other.getStandardDeviation()) + "\n";
-        out += "Sum: " + percentImprovement(statistics.getSum(),other.statistics.getSum())+ "\n";
+        out += "Trials: " + percentImprovement(statistics.getCount(),other.statistics.getCount()) + "%\n";
+        out += "Average: " + percentImprovement(statistics.getAverage(),other.statistics.getAverage()) + "%\n";
+        out += "Max: " + percentImprovement(statistics.getMax(),other.statistics.getMax()) + "%\n";
+        out += "Min: " + percentImprovement(statistics.getMin(),other.statistics.getMin())+ "%\n";
+        out += "SD: " + percentImprovement(getStandardDeviation(),other.getStandardDeviation()) + "%\n";
+        out += "Sum: " + percentImprovement(statistics.getSum(),other.statistics.getSum())+ "%\n";
         return out;
     }
 

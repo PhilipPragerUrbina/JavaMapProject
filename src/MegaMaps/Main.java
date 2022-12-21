@@ -43,10 +43,11 @@ public class Main {
 
 
         //graph a benchmark
+
         DesmosHelper helper = new DesmosHelper(new DesmosHelper.plotFunction() {
             @Override
             public double getNextY(double x) {
-                Map<Integer,Integer> map = new HashMap<>(1000);
+                Map<Integer,Integer> map = new ComparisonMap<>();
                 Dataset<Integer,Integer> set = new RandomIntegerData((int)x);
                 Benchmark<Integer,Integer> benchmark = new ReadWriteBenchmark<>(set,map);
                 BenchmarkSummary summary = new BenchmarkSummary(benchmark,5);
@@ -56,6 +57,17 @@ public class Main {
         });
         System.out.println(helper.plot(10,100000,1000)); //get desmos values
 
+
+        Map<Integer,Integer> map1 = new ComparisonMap<>();
+        Dataset<Integer,Integer> set1 = new RandomIntegerData(500000);
+        Benchmark<Integer,Integer> benchmark1 = new ReadWriteBenchmark<>(set1,map1);
+        BenchmarkSummary summary = new BenchmarkSummary(benchmark1,10);
+        Map<Integer,Integer> map2 = new HashMap<>(1000);
+        Dataset<Integer,Integer> set2 = new RandomIntegerData(500000);
+        Benchmark<Integer,Integer> benchmark2 = new ReadWriteBenchmark<>(set2,map2);
+        BenchmarkSummary summary2 = new BenchmarkSummary(benchmark2,10);
+
+        System.out.println(summary.comparison(summary2));
 
     }
 }
