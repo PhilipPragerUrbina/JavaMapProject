@@ -25,5 +25,3 @@ public interface Dataset<KeyType, ValueType> {
 }
 
 
-
-//for random datasets use java secure random. Also try uuid's
