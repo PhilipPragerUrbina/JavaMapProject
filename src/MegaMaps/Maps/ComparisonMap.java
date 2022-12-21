@@ -5,9 +5,11 @@ import MegaMaps.Utils.Pair;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
+import java.util.Stack;
 
 /**
  * Simple unbalanced tree map
+ * Known problem: Can not handle duplicate hashes(Will fail tests on high counts,since random hashes will collide). Solution is to replace single entries with arraylists and check for equal.
  * @param <KeyType>
  * @param <ValueType>
  */
@@ -71,6 +73,9 @@ public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map
                 continue;
             }
             //Is neither greater nor less, must be equal
+            if(current_node.entry == null){
+                return null;//has been deleted
+            }
             return current_node.entry.value;
         }
     }
@@ -105,9 +110,13 @@ public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map
                 continue;
             }
             //Is neither greater nor less, must be equal. Assign
+            if(current_node.entry == null){
+                //has been deleted
+                entry_size++;
+                current_node.entry = new Pair<>(key, value);
+            }
             current_node.entry.value = value;
-            System.out.println(key.hashCode() + " " + current_node.entry.key.hashCode());
-            //todo fix. Sometimes hashes are the same for some reason
+            //todo fix. Sometimes hashes are the same, but the keys are different. Make arraylist of keys and check for equals.
             return;
         }
 
@@ -115,7 +124,24 @@ public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map
 
     @Override
     public void remove(KeyType key) {
-        return;
+        Node current_node = root_node;
+        while (true){
+            if(current_node == null){ //Not found, reached end of tree
+                return;
+            }
+            if(current_node.lessThan(key)){ //keep traversing tree
+                current_node = current_node.less_node;
+                continue;
+            }
+            if(current_node.greaterThan(key)){
+                current_node = current_node.greater_node;
+                continue;
+            }
+            //Is neither greater nor less, must be equal
+            entry_size--;
+            current_node.entry = null; //remove the entry (refactoring tree is too expensive)
+            return;
+        }
     }
 
     @Override
@@ -129,23 +155,36 @@ public class ComparisonMap<KeyType extends Comparable, ValueType> implements Map
         return entry_size;
     }
 
-    /**
-     * Instead of key list, you can iterate over the map
-     * Order is random
-     * @return The iterator for use in things like for loops
-     */
     @Override
     public Iterator<Pair<KeyType,ValueType>> iterator() {
         return new Iterator<>() {
             int entries_given = 0; //# Entries that have been outputted
+            Stack<Node> stack = new Stack<>(); //stack for traversal of tree
+            boolean first = true;
+
             @Override
             public boolean hasNext() {
                 return entries_given < entry_size; //check if entries left
             }
             @Override
-            public Pair<KeyType, ValueType> next() {
-
-                return null;
+            public Pair<KeyType, ValueType> next() { //traverse tree
+                if(first){
+                    stack.push(root_node); //add root node
+                    first = false;
+                }
+                Node current_node = stack.pop(); //get current node
+                if(current_node.less_node != null){ //add children
+                    stack.push(current_node.less_node);
+                }
+                if(current_node.greater_node != null){ //add children
+                    stack.push(current_node.greater_node);
+                }
+                //check if deleted
+                if(current_node.entry  == null && hasNext()){
+                    return next();
+                }
+                entries_given++;
+                return current_node.entry;
             }
         };
     }

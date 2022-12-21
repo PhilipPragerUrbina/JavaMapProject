@@ -14,6 +14,9 @@ import MegaMaps.Maps.HashMap;
 import MegaMaps.Testing.Datasets.RandomStringData;
 import MegaMaps.Testing.Datasets.UUIDData;
 import MegaMaps.Testing.Tests.InsertReadTest;
+
+import MegaMaps.Testing.Tests.KeySetTest;
+import MegaMaps.Testing.Tests.SizeTest;
 import MegaMaps.Testing.Tests.Test;
 import MegaMaps.Utils.DesmosHelper;
 import MegaMaps.Utils.Pair;
@@ -24,15 +27,22 @@ import java.util.UUID;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Map<String,Integer> map = new ComparisonMap<>();
-        Dataset<String,Integer> set = new RandomStringData(100000);
-        Test<String,Integer> test = new InsertReadTest<>(set,map);
+        //create a map
+        Map<String,Integer> map = new HashMap<>();
+
+        //Create a dataset
+        Dataset<String,Integer> set = new RandomStringData(10000);
+
+        //Run tests
+        Test<String,Integer> test = new KeySetTest<>(set,map);
         System.out.println(test.run());
-      //  for (Pair pair: map) {
-        //    System.out.println(pair);
-       // }
+        test = new SizeTest<>(set,map);
+        System.out.println(test.run());
+        test = new InsertReadTest<>(set,map);
+        System.out.println(test.run());
 
 
+        //graph a benchmark
         DesmosHelper helper = new DesmosHelper(new DesmosHelper.plotFunction() {
             @Override
             public double getNextY(double x) {
@@ -40,11 +50,11 @@ public class Main {
                 Dataset<Integer,Integer> set = new RandomIntegerData((int)x);
                 Benchmark<Integer,Integer> benchmark = new ReadWriteBenchmark<>(set,map);
                 BenchmarkSummary summary = new BenchmarkSummary(benchmark,5);
-                //   System.out.println("Done");
-                return summary.getMean()/(double) x * 1000; //get time per insertion, and get nanoseconds
+                //   System.out.println(x);
+                return summary.getMean()/(double) x * 1000; //get time per insertion, multiply by amount to make numbers more reasonable
             }
         });
-        System.out.println(helper.plot(10,100000,1000));
+        System.out.println(helper.plot(10,100000,1000)); //get desmos values
 
 
     }
