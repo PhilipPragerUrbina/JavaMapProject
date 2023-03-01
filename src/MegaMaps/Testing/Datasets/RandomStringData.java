@@ -23,7 +23,7 @@ public class RandomStringData implements Dataset<String,Integer>{
 
     @Override
     public Pair<String, Integer> getEntry(int index) {
-        return new Pair<>(generator.getEntry(index).key.toString() ,index);
+        return new Pair<>(generator.getEntry(index).key.toString()  ,index);
     }
 
 

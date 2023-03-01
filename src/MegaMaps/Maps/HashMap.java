@@ -30,7 +30,7 @@ public class HashMap<KeyType, ValueType> implements Map<KeyType,ValueType> , Ite
 
     private Bucket[] buffer; //actual hash table
     private int entry_size; //the # of entries
-    private double resize_percentage;
+    final private double resize_percentage;
 
     //for reset
     int start_size;
