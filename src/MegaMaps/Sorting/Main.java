@@ -6,7 +6,8 @@ public class Main {
     public static void main(String[] args) {
         Sort sort = new SplitSort();
         Integer[][] test_cases = new Integer[][]{
-                {7, 1, 4, 3, 6, 5, 2}
+                {7, 1, 4, 3, 6, 5, 2},
+                {2,8,9,9,2,1,1,-4,2,5,2}
         };
 
         for (Integer[] test : test_cases) {

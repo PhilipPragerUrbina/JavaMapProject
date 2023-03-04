@@ -20,7 +20,7 @@ public class SplitSort implements Sort{
         int middle =(end-start)/2;
         T middle_val = array[middle];
         for (int i = start; i < end; i++) {
-            if(array[i].compareTo(array[middle]) > 0){
+            if(array[i].compareTo(middle_val) > 0){
                 middle = circularInsert(i,middle,array);
             }
         }
@@ -28,7 +28,7 @@ public class SplitSort implements Sort{
             return;
         }
         sortSection(array,start,start+middle);
-        sortSection(array,start+middle,end);
+        sortSection(array,start+middle+1,end);
 
     }
 
@@ -42,29 +42,31 @@ public class SplitSort implements Sort{
     }
 
     /**
-     * Move value in array to another location without losing any data
-     * Moves stuff left or right todo
+     * Move value in array to another location shifting other data
+     * Moves stuff left or right depending on direction
      * @return The new index of what was previously in the destination index.
      */
     public  static <T> int circularInsert(int start_index, int destination_index, T[] array){
-        T out = array[array.length-1]; //Value that would be gone
-        for (int i = array.length-1; i > index; i-- ){
-            array[i] = array[i-1]; //Shift
+        T start_value = array[start_index];
+        if(start_index == destination_index){
+            return destination_index;
         }
-        array[index] = value; //Set new value
-        return out;
+        if(start_index > destination_index){
+            for (int i = start_index-1; i >= destination_index; i-- ){
+                array[i+1] = array[i]; //Shift
+            }
+            array[destination_index] = start_value;
+            return destination_index+1;
+        }
+        //start_index < destination_index)
+            for (int i = start_index+1; i <= destination_index; i++ ){
+                array[i-1] = array[i]; //Shift
+            }
+        array[destination_index] = start_value;
+            return destination_index-1;
+
     }
 
 
-    /**
-     * Insert value into array and return the value that was forced out at the end of the array
-     */
-    public  static <T> T insert(T value, int index, T[] array){
-        T out = array[array.length-1]; //Value that would be gone
-        for (int i = array.length-1; i > index; i-- ){
-            array[i] = array[i-1]; //Shift
-        }
-        array[index] = value; //Set new value
-        return out;
-    }
+
 }
