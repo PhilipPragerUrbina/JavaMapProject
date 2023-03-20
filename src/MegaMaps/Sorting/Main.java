@@ -5,8 +5,9 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        Sort sort = new InsertionSort();
+        Sort sort = new MergeSort();
         Integer[][] test_cases = new Integer[][]{
+                {7, 1, 4, 3, 6, 5, 2,8},
                 {7, 1, 4, 3, 6, 5, 2},
                 {2,8,9,9,2,1,1,-4,2,5,2}
         };
@@ -26,7 +27,7 @@ public class Main {
             sort.sort(search_arr);
             System.out.println("Sorted random array: " + Arrays.toString(search_arr));
             Random random = new Random();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 10000; i++) {
                 int target = random.nextInt();
                 int result = binarySearchRecursionLess(search_arr, target);
                 System.out.println("Search for " + target + " found " + result);
