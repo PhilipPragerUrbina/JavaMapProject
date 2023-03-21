@@ -40,6 +40,48 @@ public class Main {
 
     }
 
+    static void mergeSort(int[] arr){
+        int[] temp = new int[arr.length];
+
+        mergeSort(arr,0,arr.length-1,temp);
+    }
+    static void mergeSort(int[] arr, int start, int end, int[] temp){
+        if(end <= start) return;
+        int mid = (start+end)/2;
+        mergeSort(arr,0,mid,temp);
+        mergeSort(arr,mid+1,end,temp);
+        merge(arr,0,mid,mid+1,end,temp);
+    }
+
+    static void merge(int[] arr, int s1, int e1, int s2, int e2, int[] temp){
+        int index_a = s1;
+        int index_b = s2;
+        int i = s1;
+        while(index_a <= e1 && index_b <= e2) {
+            if(arr[index_a] < arr[index_b]){
+                temp[i] = arr[index_a];
+                index_a++;
+            }else {
+                temp[i] = arr[index_b];
+                index_b++;
+            }
+            i++;
+        }
+
+        for (int j = index_a; j <= e1; j++) {
+            temp[i + j - index_a] = arr[j];
+        }
+        for (int j = index_b; j <= e2; j++) {
+            temp[i + j - index_b] = arr[j];
+        }
+
+
+        for (int j = s1; j < e2+1; j++) {
+            arr[j] = temp[j];
+        }
+    }
+
+
     /**
      * Check if array is in increasing sorted order
      */
