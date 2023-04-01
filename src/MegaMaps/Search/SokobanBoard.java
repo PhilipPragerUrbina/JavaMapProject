@@ -1,5 +1,6 @@
 package MegaMaps.Search;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,30 +17,33 @@ public class SokobanBoard {
         EMPTY, //No obstacle
         WALL, //Obstacle
         BOX, //Movable box
-        TARGET, //Target with no box on it
-        PLAYER, //Current player position
-        SOLVED //Box and target on top of each other
+        PLAYER //Current player position
     }
 
    final private CellState[][] grid; //x,y
+    final private Point[] targets; //Does not change
     final private SokobanBoard parent;
     //Player position
-    int p_x, p_y;
+    private int p_x, p_y;
 
     /**
      * Create a game state
      * @param grid The state of the grid
      * Only 1 player allowed. There must be 1 target per box.
+     * @param targets The positions of the targets. ASSUMES in bounds.
      * @param parent The last game state or null
      * @throws IllegalArgumentException Game state is illegal
      */
-   public SokobanBoard(CellState[][] grid, SokobanBoard parent) throws IllegalArgumentException{
+   public SokobanBoard(CellState[][] grid, Point[] targets , SokobanBoard parent) throws IllegalArgumentException{
        assert (grid != null);
+       assert (targets != null);
+       this.targets = targets;
        this.grid = grid;
        this.parent = parent;
+
        //Validate game state
        if(getCount(CellState.PLAYER) != 1) throw new IllegalArgumentException("Player count must be 1.");
-       if(getCount(CellState.BOX) != getCount(CellState.TARGET)) throw new IllegalArgumentException("There must be 1 target per box.");
+       if(getCount(CellState.BOX) != targets.length) throw new IllegalArgumentException("There must be 1 target per box.");
        //Find player
        for (int x = 0; x < getGridWidth(); x++) {
            for (int y = 0; y < getGridHeight(); y++) {
@@ -90,7 +94,7 @@ public class SokobanBoard {
                 copied_grid[x][y] = grid[x][y]; //Enum can be assigned
             }
         }
-       return new SokobanBoard(copied_grid, this);
+       return new SokobanBoard(copied_grid, targets, this); //Targets can be re-used
     }
 
     /**
@@ -108,7 +112,12 @@ public class SokobanBoard {
      * Check if the state is solved
      */
     public boolean isSolved(){
-        return getCount(CellState.TARGET) == 0;
+        for (Point p : targets) {
+            if(!grid[p.x][p.y].equals(CellState.BOX)){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -130,17 +139,19 @@ public class SokobanBoard {
                     case BOX:
                         out.append("B");
                         break;
-                    case TARGET:
-                        out.append("T");
-                        break;
                     case PLAYER:
                         out.append("P");
                         break;
-                    case SOLVED:
-                        out.append("S");
-                        break;
                 }
                 out.append(" ");
+                for (Point target: targets) {
+                    if(target.x == x && target.y == y){
+                        out.deleteCharAt(out.length()-1);
+                        out.append("T"); //Can be at same time as other entities
+                        break;
+                    }
+                }
+
             }
             out.append('\n');
         }
@@ -202,24 +213,29 @@ public class SokobanBoard {
      * From last_x,last_y to x,y
      * Can be box,player, or solved
      */
-    public void move(int x, int y, int last_x,int last_y){
+    private void move(int x, int y, int last_x,int last_y){
         //Move out of way
-        if(grid[x][y].equals(CellState.BOX) || grid[x][y].equals(CellState.SOLVED)) {
+        if(grid[x][y].equals(CellState.BOX)) {
             move(x + (x-last_x),y + (y - last_y),x,y);
         };
-         //Move self
-        //Check to see if box and target need to be
-        //Target is eliminated when box goes on it and becomes SOLVED(can be changed back to target and box if pushed).
-        if(grid[last_x][last_y].equals(CellState.BOX) && grid[x][y].equals(CellState.TARGET) ){
-            grid[x][y] = CellState.SOLVED;
-            grid[last_x][last_y] = CellState.EMPTY;
-        }else if(grid[x][y].equals(CellState.BOX) && grid[last_x][last_y].equals(CellState.TARGET) ){ //Box and target need to be separated
-            grid[x][y] = CellState.BOX;
-            grid[last_x][last_y] = CellState.TARGET;
-        }else{
-            grid[x][y] = grid[last_x][last_y];
-            grid[last_x][last_y] = CellState.EMPTY;
-        }
+
+        //Move self
+        grid[x][y] = grid[last_x][last_y];
+        grid[last_x][last_y] = CellState.EMPTY;
+    }
+
+    /**
+     * Get player horizontal position
+     */
+    public int getPlayerX(){
+        return p_x;
+    }
+
+    /**
+     * Get player vertical position
+     */
+    public int getPlayerY(){
+        return p_y;
     }
 
     /**
@@ -232,7 +248,7 @@ public class SokobanBoard {
    public boolean canMove(int x, int y, int last_x,int last_y){
        if(!inBounds(x,y)) return  false;
        if(grid[x][y].equals(CellState.WALL)) return false;
-       if(grid[x][y].equals(CellState.EMPTY) || grid[x][y].equals(CellState.TARGET) ) return true;
+       if(grid[x][y].equals(CellState.EMPTY)) return true;
        //Target is a movable object. Test if it would be able to move out of the way.
        return canMove(x + (x-last_x),y + (y - last_y),x,y); //Figure out which way to push based on last position
    }

@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Main {
     public static void main(String[] args) {
-        Sort sort = new MergeSort();
+        Sort sort = new QuickSort();
         Integer[][] test_cases = new Integer[][]{
                 {7, 1, 4, 3, 6, 5, 2,8},
                 {7, 1, 4, 3, 6, 5, 2},
