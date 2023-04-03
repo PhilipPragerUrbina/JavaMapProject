@@ -127,30 +127,32 @@ public class SokobanBoard {
     public String toString() {
         StringBuilder out = new StringBuilder();
         for (int x = 0; x < getGridWidth(); x++) {
+            out.append('|');
             for (int y = 0; y < getGridHeight(); y++) {
                 CellState state = grid[x][y];
                 switch (state){
                     case EMPTY:
-                        out.append(" ");
+                        out.append(' ');
                         break;
                     case WALL:
-                        out.append("W");
+                        out.append('w');
                         break;
                     case BOX:
-                        out.append("B");
+                        out.append('b');
                         break;
                     case PLAYER:
-                        out.append("P");
+                        out.append('p');
                         break;
                 }
-                out.append(" ");
+                out.append(' ');
                 for (Point target: targets) {
                     if(target.x == x && target.y == y){
                         out.deleteCharAt(out.length()-1);
-                        out.append("T"); //Can be at same time as other entities
+                        out.append('t'); //Can be at same time as other entities
                         break;
                     }
                 }
+                out.append('|');
 
             }
             out.append('\n');
@@ -172,25 +174,25 @@ public class SokobanBoard {
    public ArrayList<SokobanBoard> getNextStates(){
        ArrayList<SokobanBoard> states = new ArrayList<>();
         //Move up
-       if(canMove(p_x,p_y,p_x,p_y +1 )){
+       if(canMove(p_x,p_y+1,p_x,p_y  )){
            SokobanBoard child = copy();
            child.move(p_x,p_y +1);
            states.add(child);
        }
        //Move right
-       if(canMove(p_x,p_y,p_x+1,p_y )){
+       if(canMove(p_x+1,p_y,p_x,p_y )){
            SokobanBoard child = copy();
            child.move(p_x+1,p_y );
            states.add(child);
        }
        //Move left
-       if(canMove(p_x,p_y,p_x-1,p_y )){
+       if(canMove(p_x-1,p_y,p_x,p_y )){
            SokobanBoard child = copy();
            child.move(p_x-1,p_y );
            states.add(child);
        }
        //Move down
-       if(canMove(p_x,p_y,p_x,p_y -1 )){
+       if(canMove(p_x,p_y-1,p_x,p_y  )){
            SokobanBoard child = copy();
            child.move(p_x,p_y -1);
            states.add(child);
@@ -259,6 +261,26 @@ public class SokobanBoard {
    public boolean inBounds(int x,int y){
        return x > -1 && y > -1 && x < getGridWidth() && y < getGridHeight();
    }
+
+    /**
+     * Get positions of boxes on grid
+     */
+    ArrayList<Point> getBoxPositions(){
+       ArrayList<Point> positions = new ArrayList<>();
+        for (int x = 0; x < getGridWidth(); x++) {
+            for (int y = 0; y < getGridHeight(); y++) {
+                if(grid[x][y].equals(CellState.BOX)) positions.add(new Point(x,y));
+            }
+        }
+        return positions;
+    }
+
+    /**
+     * Get target positions on grid
+     */
+    Point[] getTargets(){
+        return targets;
+    }
 
 
     // todo Heuristic: the inverse of the maximum distance of a box to the nearest target.
