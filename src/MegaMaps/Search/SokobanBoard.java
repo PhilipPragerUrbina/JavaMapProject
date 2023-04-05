@@ -1,8 +1,10 @@
 package MegaMaps.Search;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * The box to target puzzle also known as warehouse keeper
@@ -10,6 +12,12 @@ import java.util.Arrays;
  * A player can move boxes around a grid with walls. The player must put a box on all targets.
  */
 public class SokobanBoard {
+    /**
+     * In the official game you can not push rows of boxes so leave this at false
+     * But it is interesting to allow the player to push multiple boxes at a time.
+     */
+    private final boolean ALLOW_CASCADED_PUSH = false;
+
     /**
      * A cell in the world or grid
      */
@@ -54,6 +62,78 @@ public class SokobanBoard {
                }
            }
        }
+   }
+
+    /**
+     * Create a board from  a plain text *.sok file
+     * @param sokoban_file Location of file
+     * @return Board
+     * More info on the free form SOK format: https://alonso-delarte.medium.com/the-basics-of-sokoban-level-formats-for-designing-your-own-sokoban-levels-51882a7a36f0
+     */
+   public static SokobanBoard openBoard (File sokoban_file) throws IOException {
+       //todo multi level support
+       BufferedReader reader =  new BufferedReader(new FileReader(sokoban_file));
+       String line =reader.readLine();
+
+       ArrayList<ArrayList<CellState>> resizable_grid = new ArrayList<>();
+       ArrayList<Point> targets = new ArrayList<>();
+       int max_width = 0;
+
+        while(line != null ){
+            //Ignore if line is empty
+            //Ignore if line is extra metadata and not actual level data
+            if(line.split("[^\\s#.p@b$_PB+*-]").length == 1 && !line.trim().isEmpty()){
+                ArrayList<CellState> row = new ArrayList<>();
+
+                for (int i  = 0; i < line.length(); i++) {
+                    char c = line.charAt(i);
+                    //Supports both symbol sets
+                    if (c == '#') {
+                        row.add(CellState.WALL);
+                    } else if(c == ' ' || c == '-' || c == '_'){
+                        row.add(CellState.EMPTY);
+                    } else if (c == '.') {
+                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                    } else if(c == 'p' || c == '@'){
+                        row.add(CellState.PLAYER);
+                    }else if(c == 'b' || c == '$'){
+                        row.add(CellState.BOX);
+                    }else if(c == 'P' || c == '+'){
+                        row.add(CellState.PLAYER);
+                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                    }else if(c == 'B' || c == '*'){
+                        row.add(CellState.BOX);
+                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                    }
+                }
+                if(row.size() > max_width){
+                    max_width = row.size();
+                }
+                resizable_grid.add(row);
+            }
+            line = reader.readLine();
+        }
+       reader.close();
+
+        CellState[][] grid = new CellState[max_width][resizable_grid.size()];
+       for (int x = 0; x < grid.length; x++) {
+           for (int y = 0; y < grid[0].length; y++) {
+               ArrayList<CellState> row = resizable_grid.get(y);
+               if(x < row.size()){
+                   grid[x][y] = row.get(x);
+               }else{
+                   //fill
+                   grid[x][y] = CellState.EMPTY;
+               }
+           }
+       }
+       Point[] target_array = new Point[targets.size()];
+       for (int i = 0; i < targets.size(); i++) {
+           target_array[i] = targets.get(i);
+       }
+
+       return new SokobanBoard(grid, target_array, null);
+
    }
 
     /**
@@ -127,7 +207,6 @@ public class SokobanBoard {
     public String toString() {
         StringBuilder out = new StringBuilder();
         for (int x = 0; x < getGridWidth(); x++) {
-            out.append('|');
             for (int y = 0; y < getGridHeight(); y++) {
                 CellState state = grid[x][y];
                 switch (state){
@@ -135,7 +214,7 @@ public class SokobanBoard {
                         out.append(' ');
                         break;
                     case WALL:
-                        out.append('w');
+                        out.append('#');
                         break;
                     case BOX:
                         out.append('b');
@@ -152,7 +231,6 @@ public class SokobanBoard {
                         break;
                     }
                 }
-                out.append('|');
 
             }
             out.append('\n');
@@ -251,6 +329,10 @@ public class SokobanBoard {
        if(!inBounds(x,y)) return  false;
        if(grid[x][y].equals(CellState.WALL)) return false;
        if(grid[x][y].equals(CellState.EMPTY)) return true;
+       //Boxes can not push boxes unless this mode is enabled
+       if(!ALLOW_CASCADED_PUSH && (grid[x][y].equals(CellState.BOX) && grid[last_x][last_y].equals(CellState.BOX))) {
+        return false;
+       }
        //Target is a movable object. Test if it would be able to move out of the way.
        return canMove(x + (x-last_x),y + (y - last_y),x,y); //Figure out which way to push based on last position
    }
@@ -281,8 +363,4 @@ public class SokobanBoard {
     Point[] getTargets(){
         return targets;
     }
-
-
-    // todo Heuristic: the inverse of the maximum distance of a box to the nearest target.
-
 }

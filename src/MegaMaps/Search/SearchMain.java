@@ -1,12 +1,14 @@
 package MegaMaps.Search;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SearchMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //Test case
         SokobanBoard board = new SokobanBoard(new SokobanBoard.CellState[][]{
                 {SokobanBoard.CellState.PLAYER , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
@@ -14,16 +16,19 @@ public class SearchMain {
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY}
-
-
         }, new Point[]{new Point(2,1), new Point(4,2)}, null);
 
-        printSteps(solve(board,new ArrayList<>()),1);
+        SokobanBoard board_2 =SokobanBoard.openBoard(new File("test.sok"));
 
-
-
+        printSteps(solve(board_2,new ArrayList<>()),1);
     }
 
+    /**
+     * Print steps
+     * @param final_board Final state to print steps to
+     * @param count Starts at 1
+     *  Steps numbers are in reverse order.
+     */
     private static void printSteps(SokobanBoard final_board, int count){
 
         if(final_board.getParent() != null){
@@ -39,10 +44,8 @@ public class SearchMain {
         explored.add(start);
         if(start.isSolved()) return start;
         ArrayList<SokobanBoard> options = start.getNextStates();
-        while (!options.isEmpty()) {
-            int best = 0; //todo add heuristic
-            SokobanBoard option = options.remove(best);
-            if(explored.contains(option)) continue;;
+        for (SokobanBoard option : options) {
+            if(explored.contains(option)) continue;
             SokobanBoard solved = solve(option, explored);
             if (solved != null) {
                 return solved;
@@ -50,6 +53,7 @@ public class SearchMain {
         }
         return null;
     }
+
 
     private static void  playBoard(SokobanBoard board){
         Scanner in = new Scanner(System.in);
