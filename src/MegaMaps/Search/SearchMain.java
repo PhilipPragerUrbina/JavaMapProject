@@ -18,8 +18,8 @@ public class SearchMain {
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY}
         }, new Point[]{new Point(2,1), new Point(4,2)}, null);
 
-        SokobanBoard board_2 =SokobanBoard.openBoard(new File("test.sok"));
-
+        SokobanBoard board_2 =SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/ExtremelyEasy.sok"),9);
+        System.out.println(board_2);
         printSteps(solve(board_2,new ArrayList<>()),1);
     }
 

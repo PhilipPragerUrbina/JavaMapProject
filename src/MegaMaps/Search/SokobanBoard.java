@@ -69,14 +69,18 @@ public class SokobanBoard {
      * @param sokoban_file Location of file
      * @return Board
      * More info on the free form SOK format: https://alonso-delarte.medium.com/the-basics-of-sokoban-level-formats-for-designing-your-own-sokoban-levels-51882a7a36f0
+     * @param level_number Sometimes there are multiple levels. Which one to choose starting at 0
      */
-   public static SokobanBoard openBoard (File sokoban_file) throws IOException {
-       //todo multi level support
+   public static SokobanBoard openBoard (File sokoban_file ,int level_number) throws IOException {
        BufferedReader reader =  new BufferedReader(new FileReader(sokoban_file));
        String line =reader.readLine();
 
+       int level = 0;
+
+
        ArrayList<ArrayList<CellState>> resizable_grid = new ArrayList<>();
        ArrayList<Point> targets = new ArrayList<>();
+
        int max_width = 0;
 
         while(line != null ){
@@ -93,37 +97,50 @@ public class SokobanBoard {
                     } else if(c == ' ' || c == '-' || c == '_'){
                         row.add(CellState.EMPTY);
                     } else if (c == '.') {
-                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                        targets.add(new Point(resizable_grid.size(), i));
+                        row.add(CellState.EMPTY);
                     } else if(c == 'p' || c == '@'){
                         row.add(CellState.PLAYER);
                     }else if(c == 'b' || c == '$'){
                         row.add(CellState.BOX);
                     }else if(c == 'P' || c == '+'){
                         row.add(CellState.PLAYER);
-                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                        targets.add(new Point(resizable_grid.size(), i ));
                     }else if(c == 'B' || c == '*'){
                         row.add(CellState.BOX);
-                        targets.add(new Point(row.size(),resizable_grid.size() ));
+                        targets.add(new Point(resizable_grid.size(), i ));
                     }
                 }
                 if(row.size() > max_width){
                     max_width = row.size();
                 }
                 resizable_grid.add(row);
+            }else{
+                if(!resizable_grid.isEmpty()){
+                    if(level_number == level){
+                        break;
+                    } else {
+                        //reset
+                       resizable_grid = new ArrayList<>();
+                        targets = new ArrayList<>();
+                       max_width = 0;
+                        level++;
+                    }
+                }
             }
             line = reader.readLine();
         }
        reader.close();
 
-        CellState[][] grid = new CellState[max_width][resizable_grid.size()];
-       for (int x = 0; x < grid.length; x++) {
-           for (int y = 0; y < grid[0].length; y++) {
+        CellState[][] grid = new CellState[resizable_grid.size()][max_width];
+       for (int x = 0; x < grid[0].length; x++) {
+           for (int y = 0; y < grid.length; y++) {
                ArrayList<CellState> row = resizable_grid.get(y);
                if(x < row.size()){
-                   grid[x][y] = row.get(x);
+                   grid[y][x] = row.get(x);
                }else{
                    //fill
-                   grid[x][y] = CellState.EMPTY;
+                   grid[y][x] = CellState.EMPTY;
                }
            }
        }
