@@ -11,12 +11,21 @@ import java.util.Scanner;
  * This represents the game state
  * A player can move boxes around a grid with walls. The player must put a box on all targets.
  */
-public class SokobanBoard {
+public class SokobanBoard implements Comparable<SokobanBoard>{
     /**
      * In the official game you can not push rows of boxes so leave this at false
      * But it is interesting to allow the player to push multiple boxes at a time.
      */
     private final boolean ALLOW_CASCADED_PUSH = false;
+
+    /**
+     * The heuristic
+     */
+    @Override
+    public int compareTo(SokobanBoard o) {
+        //todo implement a proper heuristic
+        return (int)(Math.random()*4)-2;
+    }
 
     /**
      * A cell in the world or grid
@@ -131,7 +140,9 @@ public class SokobanBoard {
             line = reader.readLine();
         }
        reader.close();
-
+        if(resizable_grid.isEmpty()){
+            throw new IOException("Level does not exist: " + level_number);
+        }
         CellState[][] grid = new CellState[resizable_grid.size()][max_width];
        for (int x = 0; x < grid[0].length; x++) {
            for (int y = 0; y < grid.length; y++) {
@@ -228,7 +239,7 @@ public class SokobanBoard {
                 CellState state = grid[x][y];
                 switch (state){
                     case EMPTY:
-                        out.append(' ');
+                        out.append("  ");
                         break;
                     case WALL:
                         out.append('#');

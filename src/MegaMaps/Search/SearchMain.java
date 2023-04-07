@@ -4,12 +4,12 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 
 public class SearchMain {
     public static void main(String[] args) throws IOException {
-        //Test case
+        //Hardcoded test case
         SokobanBoard board = new SokobanBoard(new SokobanBoard.CellState[][]{
                 {SokobanBoard.CellState.PLAYER , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
                 {SokobanBoard.CellState.WALL , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY},
@@ -18,35 +18,95 @@ public class SearchMain {
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY}
         }, new Point[]{new Point(2,1), new Point(4,2)}, null);
 
-        SokobanBoard board_2 =SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/ExtremelyEasy.sok"),9);
+        //Open a puzzle file
+        SokobanBoard board_2 = SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/ExtremelyEasy.sok"),9);
         System.out.println(board_2);
-        printSteps(solve(board_2,new ArrayList<>()),1);
+        printSteps(solveHeuristic(board_2));
     }
 
     /**
      * Print steps
      * @param final_board Final state to print steps to
-     * @param count Starts at 1
-     *  Steps numbers are in reverse order.
      */
-    private static void printSteps(SokobanBoard final_board, int count){
-
-        if(final_board.getParent() != null){
-            printSteps(final_board.getParent(),count+1);
+    private static void printSteps(SokobanBoard final_board){
+    ArrayList<SokobanBoard> steps = new ArrayList<>();
+    steps.add(final_board);
+    while (final_board.getParent() != null){
+        final_board = final_board.getParent();
+        steps.add(final_board);
+    }
+        for (int i = steps.size()-1; i >= 0; i--) {
+            System.out.println("Step " + (steps.size() - i));
+            System.out.println(steps.get(i));
         }
-        System.out.println("Step " + count);
-            System.out.println(final_board);
-
-
     }
 
-    private static  SokobanBoard solve(SokobanBoard start,ArrayList<SokobanBoard> explored){
+
+
+    //Dynamic ordering
+    private static  SokobanBoard solveHeuristic(SokobanBoard start){
+        ArrayList<SokobanBoard> explored = new ArrayList<>();
+        Queue<SokobanBoard> frontier = new PriorityQueue<>(); //Orders by heuristic score
+        //todo implement the comparable interface to add heuristic to a priority queue
+        frontier.add(start);
+        while (!frontier.isEmpty()){
+            SokobanBoard current = frontier.remove();
+            if(current.isSolved()) return current;
+            for (SokobanBoard possibility: current.getNextStates()) {
+                if(explored.contains(possibility)) continue;
+                explored.add(possibility);
+                frontier.add(possibility);
+            }
+        }
+        return null;
+    }
+
+
+    //Depth first. not recursive
+    private static  SokobanBoard solveDepth(SokobanBoard start){
+        //todo test hash map as well. Also add a hash code to make comparison faster for both arrays and hash maps.
+        ArrayList<SokobanBoard> explored = new ArrayList<>(); //todo pre-allocate
+        Stack<SokobanBoard> frontier = new Stack<>();  //LIFO
+        frontier.push(start);
+        while (!frontier.empty()){
+            SokobanBoard current = frontier.pop();
+            if(current.isSolved()) return current;
+            for (SokobanBoard possibility: current.getNextStates()) {
+                if(explored.contains(possibility)) continue;
+                explored.add(possibility);
+                frontier.push(possibility);
+            }
+        }
+        return null;
+    }
+
+    //breadth first. Finds faster solutions.
+    private static  SokobanBoard solveBreadth(SokobanBoard start){
+        ArrayList<SokobanBoard> explored = new ArrayList<>();
+        Queue<SokobanBoard> frontier = new ArrayDeque<>(); //FIFO
+        frontier.add(start);
+        while (!frontier.isEmpty()){
+            SokobanBoard current = frontier.remove();
+            if(current.isSolved()) return current;
+            for (SokobanBoard possibility: current.getNextStates()) {
+                if(explored.contains(possibility)) continue;
+                explored.add(possibility);
+                frontier.add(possibility);
+            }
+        }
+        return null;
+    }
+
+    //depth first
+    private static  SokobanBoard solveRecursiveDepth(SokobanBoard start,ArrayList<SokobanBoard> explored, int max_depth){
+        if(max_depth == 0) return null;
+      //  System.out.println(start);
         explored.add(start);
         if(start.isSolved()) return start;
         ArrayList<SokobanBoard> options = start.getNextStates();
         for (SokobanBoard option : options) {
             if(explored.contains(option)) continue;
-            SokobanBoard solved = solve(option, explored);
+            SokobanBoard solved = solveRecursiveDepth(option, explored,max_depth-1);
             if (solved != null) {
                 return solved;
             }
