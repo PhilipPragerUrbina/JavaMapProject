@@ -16,10 +16,10 @@ public class SearchMain {
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.EMPTY, SokobanBoard.CellState.EMPTY},
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY}
-        }, new Point[]{new Point(2,1), new Point(4,2)}, null);
+        }, new Point[]{new Point(2,1), new Point(4,2)}, null,0);
 
         //Open a puzzle file
-        SokobanBoard board_2 = SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/ExtremelyEasy.sok"),9);
+        SokobanBoard board_2 = SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/Frustratingly Difficult.sok"),9);
         System.out.println(board_2);
         printSteps(solveHeuristic(board_2));
     }
@@ -45,7 +45,7 @@ public class SearchMain {
 
     //Dynamic ordering
     private static  SokobanBoard solveHeuristic(SokobanBoard start){
-        ArrayList<SokobanBoard> explored = new ArrayList<>();
+        HashSet<SokobanBoard> explored = new HashSet<>();
         Queue<SokobanBoard> frontier = new PriorityQueue<>(); //Orders by heuristic score
         //todo implement the comparable interface to add heuristic to a priority queue
         frontier.add(start);
@@ -65,7 +65,7 @@ public class SearchMain {
     //Depth first. not recursive
     private static  SokobanBoard solveDepth(SokobanBoard start){
         //todo test hash map as well. Also add a hash code to make comparison faster for both arrays and hash maps.
-        ArrayList<SokobanBoard> explored = new ArrayList<>(); //todo pre-allocate
+        HashSet<SokobanBoard> explored = new HashSet<>(); //todo pre-allocate
         Stack<SokobanBoard> frontier = new Stack<>();  //LIFO
         frontier.push(start);
         while (!frontier.empty()){
@@ -82,7 +82,7 @@ public class SearchMain {
 
     //breadth first. Finds faster solutions.
     private static  SokobanBoard solveBreadth(SokobanBoard start){
-        ArrayList<SokobanBoard> explored = new ArrayList<>();
+        HashSet<SokobanBoard> explored = new HashSet<>();
         Queue<SokobanBoard> frontier = new ArrayDeque<>(); //FIFO
         frontier.add(start);
         while (!frontier.isEmpty()){

@@ -19,12 +19,29 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
     private final boolean ALLOW_CASCADED_PUSH = false;
 
     /**
+     * Turn this on to optimize heuristic based on tree depth
+     * Find solutions that take fewer steps(more optimal)
+     * Great for smaller and medium puzzles
+     * Can significantly increase memory and time performance for larger puzzles, not recommend for most cases.
+     * Breadth first search is also a good alternative.
+     */
+    private final Boolean A_STAR = false;
+
+     int heuristic_score = 0 ; //Bigger is better
+    int tree_depth;
+
+    /**
      * The heuristic
      */
     @Override
     public int compareTo(SokobanBoard o) {
-        //todo implement a proper heuristic
-        return (int)(Math.random()*4)-2;
+        //Order is reversed on purpose. We want the one with the highest score to have the highest priority(Which lower spot in queue)
+        return Integer.compare(o.heuristic_score, heuristic_score);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(grid);
     }
 
     /**
@@ -49,14 +66,16 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
      * Only 1 player allowed. There must be 1 target per box.
      * @param targets The positions of the targets. ASSUMES in bounds.
      * @param parent The last game state or null
+     * @param tree_depth Depth in search tree for A* heuristic
      * @throws IllegalArgumentException Game state is illegal
      */
-   public SokobanBoard(CellState[][] grid, Point[] targets , SokobanBoard parent) throws IllegalArgumentException{
+   public SokobanBoard(CellState[][] grid, Point[] targets , SokobanBoard parent, int tree_depth) throws IllegalArgumentException{
        assert (grid != null);
        assert (targets != null);
        this.targets = targets;
        this.grid = grid;
        this.parent = parent;
+       this.tree_depth = tree_depth;
 
        //Validate game state
        if(getCount(CellState.PLAYER) != 1) throw new IllegalArgumentException("Player count must be 1.");
@@ -67,9 +86,36 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
                if(grid[x][y].equals(CellState.PLAYER)){
                    p_x = x;
                    p_y = y;
-                   return;
+                   break;
                }
            }
+       }
+   }
+
+   //todo doc
+   void calculateHeuristic(){
+       //Assign score
+       int score = 0;
+       Point player_pos = new Point(p_x,p_y);
+       ArrayList<Point> boxes = getBoxPositions();
+       for (Point box: boxes ) {
+           score -= box.distance(player_pos);
+           for (Point target: targets) {
+               score -= box.distance(target);
+           }
+       }
+       //Additional heuristic for problems where there are some boxes on targets, and they need to be moved to put a remaining box on the target
+       //Basically boxes not on targets are very expensive
+       for (Point p : targets) {
+           if(!grid[p.x][p.y].equals(CellState.BOX)){
+               score -= 1000;
+           }
+       }
+
+       if(A_STAR){
+           heuristic_score = score*20 - tree_depth; //A* is weighted less
+       }else{
+           heuristic_score = score;
        }
    }
 
@@ -160,7 +206,7 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
            target_array[i] = targets.get(i);
        }
 
-       return new SokobanBoard(grid, target_array, null);
+       return new SokobanBoard(grid, target_array, null,0);
 
    }
 
@@ -202,7 +248,7 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
                 copied_grid[x][y] = grid[x][y]; //Enum can be assigned
             }
         }
-       return new SokobanBoard(copied_grid, targets, this); //Targets can be re-used
+       return new SokobanBoard(copied_grid, targets, this, tree_depth+1); //Targets can be re-used
     }
 
     /**
@@ -283,24 +329,28 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
        if(canMove(p_x,p_y+1,p_x,p_y  )){
            SokobanBoard child = copy();
            child.move(p_x,p_y +1);
+           child.calculateHeuristic();
            states.add(child);
        }
        //Move right
        if(canMove(p_x+1,p_y,p_x,p_y )){
            SokobanBoard child = copy();
            child.move(p_x+1,p_y );
+           child.calculateHeuristic();
            states.add(child);
        }
        //Move left
        if(canMove(p_x-1,p_y,p_x,p_y )){
            SokobanBoard child = copy();
            child.move(p_x-1,p_y );
+           child.calculateHeuristic();
            states.add(child);
        }
        //Move down
        if(canMove(p_x,p_y-1,p_x,p_y  )){
            SokobanBoard child = copy();
            child.move(p_x,p_y -1);
+           child.calculateHeuristic();
            states.add(child);
        }
        return states;
