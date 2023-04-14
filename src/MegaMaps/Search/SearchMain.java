@@ -18,39 +18,50 @@ public class SearchMain {
                 {SokobanBoard.CellState.EMPTY , SokobanBoard.CellState.BOX, SokobanBoard.CellState.EMPTY}
         }, new Point[]{new Point(2,1), new Point(4,2)}, null,0);
 
-        //Open a puzzle file
-        SokobanBoard board_2 = SokobanBoard.openBoard(new File("puzzles/Alonso-Del-Arte/sok/Frustratingly Difficult.sok"),9);
-        System.out.println(board_2);
-        printSteps(solveHeuristic(board_2));
+        String[] filenames = new String[]{
+                "puzzles/Alonso-Del-Arte/sok/ExtremelyEasy.sok","puzzles/Alonso-Del-Arte/sok/SeeminglyHard.sok","puzzles/Alonso-Del-Arte/sok/IllustrativeLevels.sok",
+                "puzzles/Alonso-Del-Arte/sok/Frustratingly Difficult.sok","puzzles/Alonso-Del-Arte/sok/Laborious.sok"};
+
+        for (int j = 0; j < filenames.length; j++) {
+            for (int i = 0; i < 10; i++) {
+                //Open a puzzle file
+                SokobanBoard board_2 = SokobanBoard.openBoard(new File(filenames[j]),i);
+                //  System.out.println(board_2);
+                System.out.println("Puzzle " + (i+1) + " : " + getSteps(solveHeuristic(board_2)).size() + " steps");
+              /*
+          for (int i = steps.size()-1; i >= 0; i--) {
+            System.out.println("Step " + (steps.size() - i));
+            System.out.println(steps.get(i));
+        }
+         */
+            }
+        }
     }
 
     /**
      * Print steps
      * @param final_board Final state to print steps to
      */
-    private static void printSteps(SokobanBoard final_board){
-    ArrayList<SokobanBoard> steps = new ArrayList<>();
+    private static ArrayList<Puzzle> getSteps(Puzzle final_board){
+    ArrayList<Puzzle> steps = new ArrayList<>();
     steps.add(final_board);
     while (final_board.getParent() != null){
         final_board = final_board.getParent();
         steps.add(final_board);
     }
-        for (int i = steps.size()-1; i >= 0; i--) {
-            System.out.println("Step " + (steps.size() - i));
-            System.out.println(steps.get(i));
-        }
+      return steps;
     }
 
 
 
     //Dynamic ordering
-    private static  SokobanBoard solveHeuristic(SokobanBoard start){
-        HashSet<SokobanBoard> explored = new HashSet<>();
-        Queue<SokobanBoard> frontier = new PriorityQueue<>(); //Orders by heuristic score
+    private static  SokobanBoard solveHeuristic(Puzzle start){
+        HashSet<Puzzle> explored = new HashSet<>();
+        Queue<Puzzle> frontier = new PriorityQueue<>(); //Orders by heuristic score
         //todo implement the comparable interface to add heuristic to a priority queue
         frontier.add(start);
         while (!frontier.isEmpty()){
-            SokobanBoard current = frontier.remove();
+            Puzzle current = frontier.remove();
             if(current.isSolved()) return current;
             for (SokobanBoard possibility: current.getNextStates()) {
                 if(explored.contains(possibility)) continue;

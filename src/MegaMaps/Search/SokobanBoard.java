@@ -27,7 +27,7 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
      */
     private final Boolean A_STAR = false;
 
-     int heuristic_score = 0 ; //Bigger is better
+     int heuristic_score = 0 ; //Smaller is better
     int tree_depth;
 
     /**
@@ -36,7 +36,7 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
     @Override
     public int compareTo(SokobanBoard o) {
         //Order is reversed on purpose. We want the one with the highest score to have the highest priority(Which lower spot in queue)
-        return Integer.compare(o.heuristic_score, heuristic_score);
+        return Integer.compare(heuristic_score, o.heuristic_score);
     }
 
     @Override
@@ -92,6 +92,10 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
        }
    }
 
+   private static int manhattanDistance(Point a, Point b){
+       return Math.abs(a.x-b.x) + Math.abs(a.y-b.y);
+   }
+
    //todo doc
    void calculateHeuristic(){
        //Assign score
@@ -99,21 +103,21 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
        Point player_pos = new Point(p_x,p_y);
        ArrayList<Point> boxes = getBoxPositions();
        for (Point box: boxes ) {
-           score -= box.distance(player_pos);
+           score += manhattanDistance(box,player_pos);
            for (Point target: targets) {
-               score -= box.distance(target);
+               score += manhattanDistance(box,target);
            }
        }
        //Additional heuristic for problems where there are some boxes on targets, and they need to be moved to put a remaining box on the target
        //Basically boxes not on targets are very expensive
        for (Point p : targets) {
            if(!grid[p.x][p.y].equals(CellState.BOX)){
-               score -= 1000;
+               score += 1000;
            }
        }
 
        if(A_STAR){
-           heuristic_score = score*20 - tree_depth; //A* is weighted less
+           heuristic_score = score + tree_depth; //A* is weighted less
        }else{
            heuristic_score = score;
        }
