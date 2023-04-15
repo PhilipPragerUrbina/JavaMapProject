@@ -11,7 +11,7 @@ import java.util.Scanner;
  * This represents the game state
  * A player can move boxes around a grid with walls. The player must put a box on all targets.
  */
-public class SokobanBoard implements Comparable<SokobanBoard>{
+public class SokobanBoard implements Puzzle{
     /**
      * In the official game you can not push rows of boxes so leave this at false
      * But it is interesting to allow the player to push multiple boxes at a time.
@@ -34,9 +34,9 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
      * The heuristic
      */
     @Override
-    public int compareTo(SokobanBoard o) {
+    public int compareTo(Object o) {
         //Order is reversed on purpose. We want the one with the highest score to have the highest priority(Which lower spot in queue)
-        return Integer.compare(heuristic_score, o.heuristic_score);
+        return Integer.compare(heuristic_score, ((SokobanBoard)o).heuristic_score);
     }
 
     @Override
@@ -327,8 +327,8 @@ public class SokobanBoard implements Comparable<SokobanBoard>{
     /**
      * Get next possible states
      */
-   public ArrayList<SokobanBoard> getNextStates(){
-       ArrayList<SokobanBoard> states = new ArrayList<>();
+   public ArrayList<Puzzle> getNextStates(){
+       ArrayList<Puzzle> states = new ArrayList<>();
         //Move up
        if(canMove(p_x,p_y+1,p_x,p_y  )){
            SokobanBoard child = copy();

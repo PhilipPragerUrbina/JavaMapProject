@@ -55,7 +55,7 @@ public class SearchMain {
 
 
     //Dynamic ordering
-    private static  SokobanBoard solveHeuristic(Puzzle start){
+    private static  Puzzle solveHeuristic(Puzzle start){
         HashSet<Puzzle> explored = new HashSet<>();
         Queue<Puzzle> frontier = new PriorityQueue<>(); //Orders by heuristic score
         //todo implement the comparable interface to add heuristic to a priority queue
@@ -63,7 +63,7 @@ public class SearchMain {
         while (!frontier.isEmpty()){
             Puzzle current = frontier.remove();
             if(current.isSolved()) return current;
-            for (SokobanBoard possibility: current.getNextStates()) {
+            for (Puzzle possibility : current.getNextStates()) {
                 if(explored.contains(possibility)) continue;
                 explored.add(possibility);
                 frontier.add(possibility);
@@ -74,15 +74,15 @@ public class SearchMain {
 
 
     //Depth first. not recursive
-    private static  SokobanBoard solveDepth(SokobanBoard start){
+    private static  Puzzle solveDepth(Puzzle start){
         //todo test hash map as well. Also add a hash code to make comparison faster for both arrays and hash maps.
-        HashSet<SokobanBoard> explored = new HashSet<>(); //todo pre-allocate
-        Stack<SokobanBoard> frontier = new Stack<>();  //LIFO
+        HashSet<Puzzle> explored = new HashSet<>(); //todo pre-allocate
+        Stack<Puzzle> frontier = new Stack<>();  //LIFO
         frontier.push(start);
         while (!frontier.empty()){
-            SokobanBoard current = frontier.pop();
+            Puzzle current = frontier.pop();
             if(current.isSolved()) return current;
-            for (SokobanBoard possibility: current.getNextStates()) {
+            for (Puzzle possibility: current.getNextStates()) {
                 if(explored.contains(possibility)) continue;
                 explored.add(possibility);
                 frontier.push(possibility);
@@ -92,14 +92,14 @@ public class SearchMain {
     }
 
     //breadth first. Finds faster solutions.
-    private static  SokobanBoard solveBreadth(SokobanBoard start){
-        HashSet<SokobanBoard> explored = new HashSet<>();
-        Queue<SokobanBoard> frontier = new ArrayDeque<>(); //FIFO
+    private static  Puzzle solveBreadth(Puzzle start){
+        HashSet<Puzzle> explored = new HashSet<>();
+        Queue<Puzzle> frontier = new ArrayDeque<>(); //FIFO
         frontier.add(start);
         while (!frontier.isEmpty()){
-            SokobanBoard current = frontier.remove();
+            Puzzle current = frontier.remove();
             if(current.isSolved()) return current;
-            for (SokobanBoard possibility: current.getNextStates()) {
+            for (Puzzle possibility: current.getNextStates()) {
                 if(explored.contains(possibility)) continue;
                 explored.add(possibility);
                 frontier.add(possibility);
@@ -109,15 +109,15 @@ public class SearchMain {
     }
 
     //depth first
-    private static  SokobanBoard solveRecursiveDepth(SokobanBoard start,ArrayList<SokobanBoard> explored, int max_depth){
+    private static  Puzzle solveRecursiveDepth(Puzzle start,ArrayList<Puzzle> explored, int max_depth){
         if(max_depth == 0) return null;
       //  System.out.println(start);
         explored.add(start);
         if(start.isSolved()) return start;
-        ArrayList<SokobanBoard> options = start.getNextStates();
-        for (SokobanBoard option : options) {
+        ArrayList<Puzzle> options = start.getNextStates();
+        for (Puzzle option : options) {
             if(explored.contains(option)) continue;
-            SokobanBoard solved = solveRecursiveDepth(option, explored,max_depth-1);
+            Puzzle solved = solveRecursiveDepth(option, explored,max_depth-1);
             if (solved != null) {
                 return solved;
             }
